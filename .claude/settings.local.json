@@ -19,7 +19,12 @@
       "Bash(mkdir -p \"C:\\\\Users\\\\User\\\\Dev\\\\StickerPrintApp\\\\Fonts\")",
       "Bash(curl -L -o IBMPlexSansThai-Bold.ttf \"https://github.com/google/fonts/raw/main/ofl/ibmplexsansthai/IBMPlexSansThai-Bold.ttf\")",
       "Bash(curl -L -o IBMPlexSansThai-Regular.ttf \"https://github.com/google/fonts/raw/main/ofl/ibmplexsansthai/IBMPlexSansThai-Regular.ttf\")",
-      "Bash(curl -L -o IBMPlexSansThai-Medium.ttf \"https://github.com/google/fonts/raw/main/ofl/ibmplexsansthai/IBMPlexSansThai-Medium.ttf\")"
+      "Bash(curl -L -o IBMPlexSansThai-Medium.ttf \"https://github.com/google/fonts/raw/main/ofl/ibmplexsansthai/IBMPlexSansThai-Medium.ttf\")",
+      "Bash(find /Users/kalamell/Dev/strickerapp -type f \\\\\\( -name \".gitignore\" -o -name \"*.json\" -o -name \"*.config\" -o -name \"*.yml\" -o -name \"*.yaml\" \\\\\\) 2>/dev/null | head -20)",
+      "Bash(cd /Users/kalamell/Dev/strickerapp/app-for-mac && npm install 2>&1)",
+      "Bash(node -e \"const { EventSource } = require\\('eventsource'\\); console.log\\('eventsource OK', typeof EventSource\\)\" && node -e \"const QRCode = require\\('qrcode'\\); console.log\\('qrcode OK'\\)\")",
+      "Bash(node -e \"const es = require\\('eventsource'\\); console.log\\(Object.keys\\(es\\)\\); console.log\\(typeof es.EventSource\\); console.log\\(typeof es\\)\")",
+      "Bash(node -e \"\nconst EventSource = require\\('eventsource'\\);\nconst QRCode = require\\('qrcode'\\);\nconst crypto = require\\('crypto'\\);\nconst fs = require\\('fs'\\);\nconst path = require\\('path'\\);\nconsole.log\\('EventSource type:', typeof EventSource\\);\nconsole.log\\('All deps OK'\\);\n\n// Test QR generation\nQRCode.toDataURL\\('TEST-12345'\\).then\\(url => {\n  console.log\\('QR code generated, length:', url.length\\);\n}\\);\n\")"
     ]
   }
 }

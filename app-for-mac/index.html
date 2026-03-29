@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sticker Print Station</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Title bar drag area -->
+  <div class="titlebar">
+    <span class="titlebar-title" id="titleText">Sticker Print Station</span>
+  </div>
+
+  <div class="content">
+    <!-- ── Stats row ────────────────────────────────────── -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Station</div>
+        <div class="stat-value" id="statStation">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Status</div>
+        <div class="stat-value status-val" id="statStatus">
+          <span class="dot dot-offline"></span> Offline
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Printed</div>
+        <div class="stat-value accent-purple" id="statPrinted">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Skipped</div>
+        <div class="stat-value accent-orange" id="statSkipped">0</div>
+      </div>
+    </div>
+
+    <!-- ── Config row ────────────────────────────────────── -->
+    <div class="config-row">
+
+      <!-- Firebase Connection -->
+      <div class="card">
+        <div class="card-title">Firebase Connection</div>
+        <div class="field-group">
+          <label class="field-label">Database URL</label>
+          <input id="dbUrl" class="input" type="text"
+            value="https://ace-mile-133504.firebaseio.com"
+            placeholder="https://your-project.firebaseio.com" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Service Account Key (optional)</label>
+          <div class="file-row">
+            <input id="keyFilePath" class="input input-flex" type="text"
+              placeholder="No file selected" readonly />
+            <button class="btn btn-secondary" id="btnBrowse">Browse…</button>
+            <button class="btn btn-ghost" id="btnClearKey" title="Clear key file">✕</button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btnConnect">Start Listening</button>
+          <button class="btn btn-danger" id="btnDisconnect" disabled>Stop</button>
+        </div>
+      </div>
+
+      <!-- Station Identity -->
+      <div class="card">
+        <div class="card-title">Station Identity</div>
+        <div class="field-group">
+          <label class="field-label">Station / Printer ID</label>
+          <select id="stationId" class="input select">
+            <option value="1">Printer #1</option>
+            <option value="2">Printer #2</option>
+            <option value="3">Printer #3</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">System Printer</label>
+          <div class="file-row">
+            <select id="printerName" class="input select input-flex"></select>
+            <button class="btn btn-secondary" id="btnRefreshPrinters" title="Refresh printers">↻</button>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group field-inline">
+            <label class="field-label">Sticker W (mm)</label>
+            <input id="stickerW" class="input input-small" type="number" value="100" min="20" max="300" />
+          </div>
+          <div class="field-group field-inline">
+            <label class="field-label">Sticker H (mm)</label>
+            <input id="stickerH" class="input input-small" type="number" value="60" min="20" max="300" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Activity log ──────────────────────────────────── -->
+    <div class="card card-log">
+      <div class="card-header-row">
+        <div class="card-title">Activity Log</div>
+        <button class="btn btn-ghost btn-sm" id="btnClearLog">Clear</button>
+      </div>
+      <div class="log-list" id="logList">
+        <div class="log-empty">No activity yet.</div>
+      </div>
+    </div>
+
+    <!-- ── Queue browser ─────────────────────────────────── -->
+    <div class="card card-queue">
+      <div class="card-header-row">
+        <div class="card-title">Queue Browser</div>
+        <div class="btn-row">
+          <input id="searchInput" class="input input-search" type="text" placeholder="Search name / QR…" />
+          <button class="btn btn-secondary btn-sm" id="btnFetchAll">Fetch All</button>
+          <button class="btn btn-ghost btn-sm" id="btnSelectAll">Select All</button>
+          <button class="btn btn-ghost btn-sm" id="btnSelectUnprinted">Unprinted</button>
+          <button class="btn btn-primary btn-sm" id="btnBatchPrint">Print Selected</button>
+          <button class="btn btn-danger btn-sm" id="btnBatchDelete">Delete Selected</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="queue-table">
+          <thead>
+            <tr>
+              <th class="col-check"><input type="checkbox" id="checkAll" /></th>
+              <th>Name</th>
+              <th>Position</th>
+              <th>QR / FAR</th>
+              <th>Events</th>
+              <th>Printer</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="queueBody">
+            <tr><td colspan="7" class="table-empty">Fetch jobs to display them here.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div><!-- /content -->
+
+  <script src="renderer.js"></script>
+</body>
+</html>
