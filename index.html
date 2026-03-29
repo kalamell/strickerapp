@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sticker Print - Test Sender</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI Variable Text', 'Segoe UI', sans-serif;
+            background: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 14px;
+            padding: 32px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+        h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        .subtitle {
+            font-size: 13px;
+            color: #8c8c8c;
+            margin-bottom: 24px;
+        }
+        .field { margin-bottom: 16px; }
+        label {
+            display: block;
+            font-size: 12px;
+            color: #8c8c8c;
+            margin-bottom: 6px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-family: inherit;
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+            color: #1a1a1a;
+        }
+        input:focus, select:focus {
+            border-color: #6c5ce7;
+            background: #fff;
+        }
+        .row {
+            display: flex;
+            gap: 12px;
+        }
+        .row .field { flex: 1; }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            color: #fff;
+            background: #6c5ce7;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: opacity 0.15s;
+        }
+        .btn:hover { opacity: 0.85; }
+        .btn:active { opacity: 0.7; }
+        .btn:disabled { opacity: 0.4; cursor: default; }
+        .btn-batch {
+            background: #fff;
+            color: #6c5ce7;
+            border: 1px solid #6c5ce7;
+            margin-top: 8px;
+        }
+        .log {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #e8e8e8;
+        }
+        .log h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        .log-list {
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 11px;
+            color: #1a1a1a;
+        }
+        .log-entry {
+            padding: 6px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .log-entry.ok { color: #00b894; }
+        .log-entry.err { color: #e17055; }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+        .badge-queue {
+            background: #f0eeff;
+            color: #6c5ce7;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Sticker Print - Test Sender</h1>
+        <p class="subtitle">Send test print jobs to Firebase <span class="badge badge-queue">print_queue</span></p>
+
+        <div class="row">
+            <div class="field">
+                <label>Name</label>
+                <input type="text" id="name" value="John" placeholder="First name">
+            </div>
+            <div class="field">
+                <label>Surname</label>
+                <input type="text" id="surname" value="Doe" placeholder="Last name">
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Position</label>
+            <input type="text" id="position" value="Dental Surgeon" placeholder="Title / Position">
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label>Ticket Type</label>
+                <select id="ticketType">
+                    <option value="VIP">VIP</option>
+                    <option value="General" selected>General</option>
+                    <option value="Staff">Staff</option>
+                    <option value="Speaker">Speaker</option>
+                    <option value="Press">Press</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Printer Station</label>
+                <select id="printerId">
+                    <option value="1">Printer #1</option>
+                    <option value="2">Printer #2</option>
+                    <option value="3">Printer #3</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>QR Data</label>
+            <input type="text" id="qrData" value="CHK-20260325-001" placeholder="QR code content">
+        </div>
+
+        <div class="field">
+            <label>Events (comma separated)</label>
+            <input type="text" id="events" value="Day1, Workshop1" placeholder="e.g. Day1, Day2, Workshop1">
+        </div>
+
+        <button class="btn" id="btnSend" onclick="sendJob()">Send Print Job</button>
+        <button class="btn btn-batch" onclick="sendBatch()">Send 3 Random Jobs</button>
+
+        <div class="log">
+            <h3>Send Log</h3>
+            <div class="log-list" id="logList"></div>
+        </div>
+    </div>
+
+    <script>
+        const FIREBASE_URL = 'https://ace-mile-133504.firebaseio.com';
+        const QUEUE_PATH = 'print_queue';
+
+        const SAMPLE_FIRST = ['Alice', 'Bob', 'Charlie', 'Diana', 'Edward', 'Fiona', 'George', 'Hannah', 'Ivan', 'Julia', 'Kevin', 'Lisa'];
+        const SAMPLE_LAST = ['Smith', 'Johnson', 'Brown', 'Prince', 'Norton', 'Apple', 'Lucas', 'Montana', 'Drago', 'Roberts', 'Hart', 'Simpson'];
+        const SAMPLE_POSITIONS = ['Dental Surgeon', 'Orthodontist', 'Implantologist', 'Periodontist', 'Prosthodontist', 'General Dentist'];
+        const TICKET_TYPES = ['VIP', 'General', 'Staff', 'Speaker', 'Press'];
+        const SAMPLE_EVENTS = [['Day1'], ['Day2'], ['Day1', 'Day2'], ['Day1', 'Workshop1'], ['Day2', 'Workshop2'], ['Day1', 'Day2', 'Workshop1']];
+
+        let jobCounter = 1;
+
+        async function sendJob() {
+            const name = document.getElementById('name').value.trim();
+            const surname = document.getElementById('surname').value.trim();
+            const position = document.getElementById('position').value.trim();
+            const ticketType = document.getElementById('ticketType').value;
+            const printerId = parseInt(document.getElementById('printerId').value);
+            const qrData = document.getElementById('qrData').value.trim();
+            const eventsRaw = document.getElementById('events').value.trim();
+            const events = eventsRaw ? eventsRaw.split(',').map(e => e.trim()).filter(e => e) : [];
+
+            if (!name) {
+                log('Name is required', true);
+                return;
+            }
+
+            const job = {
+                name,
+                surname,
+                position,
+                ticketType,
+                printerId,
+                qrData: qrData || `CHK-${Date.now()}`,
+                timestamp: Date.now(),
+                printed: false,
+                events
+            };
+
+            await pushJob(job);
+        }
+
+        async function sendBatch() {
+            const btn = document.querySelector('.btn-batch');
+            btn.disabled = true;
+
+            for (let i = 0; i < 3; i++) {
+                const job = {
+                    name: SAMPLE_FIRST[Math.floor(Math.random() * SAMPLE_FIRST.length)],
+                    surname: SAMPLE_LAST[Math.floor(Math.random() * SAMPLE_LAST.length)],
+                    position: SAMPLE_POSITIONS[Math.floor(Math.random() * SAMPLE_POSITIONS.length)],
+                    ticketType: TICKET_TYPES[Math.floor(Math.random() * TICKET_TYPES.length)],
+                    printerId: Math.floor(Math.random() * 3) + 1,
+                    qrData: `CHK-${Date.now()}-${String(jobCounter).padStart(3, '0')}`,
+                    timestamp: Date.now(),
+                    printed: false,
+                    events: SAMPLE_EVENTS[Math.floor(Math.random() * SAMPLE_EVENTS.length)]
+                };
+                await pushJob(job);
+                await new Promise(r => setTimeout(r, 300));
+            }
+
+            btn.disabled = false;
+        }
+
+        async function pushJob(job) {
+            const btn = document.getElementById('btnSend');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${FIREBASE_URL}/${QUEUE_PATH}.json`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(job)
+                });
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+
+                const data = await res.json();
+                log(`Sent: "${job.name} ${job.surname}" [${job.ticketType}] -> Printer #${job.printerId} (key: ${data.name})`);
+                jobCounter++;
+
+                // auto-increment QR
+                const qrInput = document.getElementById('qrData');
+                const match = qrInput.value.match(/^(.+-)(\d+)$/);
+                if (match) {
+                    qrInput.value = match[1] + String(parseInt(match[2]) + 1).padStart(match[2].length, '0');
+                }
+            } catch (err) {
+                log(`Error: ${err.message}`, true);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function log(msg, isError = false) {
+            const list = document.getElementById('logList');
+            const time = new Date().toLocaleTimeString('en-GB');
+            const div = document.createElement('div');
+            div.className = `log-entry ${isError ? 'err' : 'ok'}`;
+            div.textContent = `[${time}] ${msg}`;
+            list.prepend(div);
+        }
+    </script>
+</body>
+</html>

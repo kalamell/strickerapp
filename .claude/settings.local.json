@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet add:*)",
+      "Bash(dotnet build:*)",
+      "Bash(powershell -Command \"Get-Printer | Format-Table Name, DriverName, PortName, PrinterStatus -AutoSize\")",
+      "Bash(powershell -Command \"Get-Printer | Where-Object { $_.Name -match 'barigan|bg-in|BG' } | Format-List *\")",
+      "Bash(powershell -Command \"Get-Printer | Where-Object { \\\\$_.Name -like '*PDF*' } | Format-Table Name, PrinterStatus -AutoSize\")",
+      "Bash(powershell -Command \"Get-PnpDevice | Where-Object { \\\\$_.FriendlyName -match 'barigan|BG-IN|printer' -and \\\\$_.Class -match 'Printer|USB' } | Format-Table FriendlyName, Status, Class, InstanceId -AutoSize\")",
+      "Bash(powershell -Command \"Get-PnpDevice -Class USB | Where-Object { \\\\$_.Status -eq 'OK' } | Format-Table FriendlyName, Status, InstanceId -AutoSize\")",
+      "Bash(powershell -Command \"Get-PnpDevice | Where-Object { \\\\$_.Status -eq 'OK' -and \\\\$_.Class -match 'Printer|Print' } | Format-Table FriendlyName, Status, Class, InstanceId -AutoSize\")",
+      "Bash(powershell -Command \"Get-PnpDevice -Class USB | Format-Table FriendlyName, Status, InstanceId -AutoSize\")",
+      "Bash(powershell -Command \"Get-PnpDevice | Where-Object { \\\\$_.InstanceId -match 'VID_0020' } | Format-List *\")",
+      "Bash(powershell -Command \"Get-PrinterProperty -PrinterName '4BARCODE 4B-2054K' | Format-Table PropertyName, Value -AutoSize\")",
+      "Bash(powershell -Command \"$cfg = Get-PrintConfiguration -PrinterName '4BARCODE 4B-2054K'; $cfg | Format-List *\")",
+      "Bash(taskkill /IM StickerPrintApp.exe /F)",
+      "Bash(powershell -Command \"Stop-Process -Name StickerPrintApp -Force -ErrorAction SilentlyContinue\")",
+      "Bash(dotnet publish:*)",
+      "Bash(mkdir -p \"C:\\\\Users\\\\User\\\\Dev\\\\StickerPrintApp\\\\Fonts\")",
+      "Bash(curl -L -o IBMPlexSansThai-Bold.ttf \"https://github.com/google/fonts/raw/main/ofl/ibmplexsansthai/IBMPlexSansThai-Bold.ttf\")",
+      "Bash(curl -L -o IBMPlexSansThai-Regular.ttf \"https://github.com/google/fonts/raw/main/ofl/ibmplexsansthai/IBMPlexSansThai-Regular.ttf\")",
+      "Bash(curl -L -o IBMPlexSansThai-Medium.ttf \"https://github.com/google/fonts/raw/main/ofl/ibmplexsansthai/IBMPlexSansThai-Medium.ttf\")"
+    ]
+  }
+}
